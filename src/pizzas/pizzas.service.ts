@@ -1,23 +1,22 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose/dist';
+import { Model } from 'mongoose';
+import { CreatePizzaDto } from './dto/create-pizza.dto';
+import { UpdatePizzaDto } from './dto/update-pizza.dto';
 import { Pizza } from './entities/pizza.entity';
 
 @Injectable()
 export class PizzasService {
-  private pizzas: Pizza[] = [
-    {
-      id: 1,
-      name: 'Tropicana',
-      brand: 'Pizza Hut',
-      flavors: ['Ananás', 'Tomate'],
-    },
-  ];
+  constructor(
+    @InjectModel(Pizza.name) private readonly pizzaModel: Model<Pizza>,
+  ) {}
 
-  findAll() {
-    return this.pizzas;
+  async findAll() {
+    return await this.pizzaModel.find().exec();
   }
 
-  findOne(id: string) {
-    const pizza = this.pizzas.find((pizza) => id === String(pizza.id));
+  async findOne(id: string) {
+    const pizza = await this.pizzaModel.findById(id).exec();
 
     if (!pizza) {
       throw new NotFoundException(`Pizza #${id} not found.`);
@@ -26,19 +25,24 @@ export class PizzasService {
     return pizza;
   }
 
-  create(createPizzaDto: any) {
-    this.pizzas.push(createPizzaDto);
+  async create(createPizzaDto: CreatePizzaDto) {
+    const pizza = new this.pizzaModel(createPizzaDto);
+    return await pizza.save();
   }
 
-  update(id: string, updatePizzaDto: any) {
-    const existingPizza = this.findOne(id);
+  async update(id: string, updatePizzaDto: UpdatePizzaDto) {
+    const existingPizza = await this.pizzaModel
+      .findByIdAndUpdate(id, { $set: updatePizzaDto }, { new: true })
+      .exec();
 
-    if (existingPizza) {
-      // update it
+    if (!existingPizza) {
+      throw new NotFoundException(`Pizza #${id} not found.`);
     }
+
+    return existingPizza;
   }
 
-  delete(id: string) {
-    this.pizzas = this.pizzas.filter((pizza) => id !== String(pizza.id));
+  async delete(id: string) {
+    return await this.pizzaModel.findByIdAndDelete(id);
   }
 }

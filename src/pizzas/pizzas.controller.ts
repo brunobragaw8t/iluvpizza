@@ -21,8 +21,8 @@ export class PizzasController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: number) {
-    return this.pizzasService.findOne('' + id);
+  findOne(@Param('id') id: string) {
+    return this.pizzasService.findOne(id);
   }
 
   @Post()
