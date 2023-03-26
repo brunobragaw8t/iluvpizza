@@ -7,6 +7,8 @@ import {
   Patch,
   Delete,
 } from '@nestjs/common';
+import { CreatePizzaDto } from './dto/create-pizza.dto';
+import { UpdatePizzaDto } from './dto/update-pizza.dto';
 import { PizzasService } from './pizzas.service';
 
 @Controller('pizzas')
@@ -24,13 +26,13 @@ export class PizzasController {
   }
 
   @Post()
-  create(@Body() body: any) {
-    return this.pizzasService.create(body);
+  create(@Body() createPizzaDto: CreatePizzaDto) {
+    return this.pizzasService.create(createPizzaDto);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() body: any) {
-    return this.pizzasService.update(id, body);
+  update(@Param('id') id: string, @Body() updatePizzaDto: UpdatePizzaDto) {
+    return this.pizzasService.update(id, updatePizzaDto);
   }
 
   @Delete(':id')
