@@ -14,5 +14,6 @@ import { PizzasService } from './pizzas.service';
   ],
   controllers: [PizzasController],
   providers: [PizzasService],
+  exports: [PizzasService],
 })
 export class PizzasModule {}
