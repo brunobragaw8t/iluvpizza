@@ -6,7 +6,9 @@ import {
   Body,
   Patch,
   Delete,
+  Query,
 } from '@nestjs/common';
+import { PaginationQueryDto } from 'src/common/dto/pagination-query.dto';
 import { CreatePizzaDto } from './dto/create-pizza.dto';
 import { UpdatePizzaDto } from './dto/update-pizza.dto';
 import { PizzasService } from './pizzas.service';
@@ -16,8 +18,8 @@ export class PizzasController {
   constructor(private readonly pizzasService: PizzasService) {}
 
   @Get()
-  findAll() {
-    return this.pizzasService.findAll();
+  findAll(@Query() paginationQuery: PaginationQueryDto) {
+    return this.pizzasService.findAll(paginationQuery);
   }
 
   @Get(':id')
