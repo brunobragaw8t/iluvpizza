@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose/dist';
-import { Model } from 'mongoose';
+import { InjectConnection, InjectModel } from '@nestjs/mongoose/dist';
+import { Connection, Model } from 'mongoose';
 import { PaginationQueryDto } from 'src/common/dto/pagination-query.dto';
 import { CreatePizzaDto } from './dto/create-pizza.dto';
 import { UpdatePizzaDto } from './dto/update-pizza.dto';
@@ -10,6 +10,8 @@ import { Pizza } from './entities/pizza.entity';
 export class PizzasService {
   constructor(
     @InjectModel(Pizza.name) private readonly pizzaModel: Model<Pizza>,
+    @InjectConnection() private readonly connection: Connection,
+    @InjectModel(Event.name) private readonly eventModel: Model<Event>,
   ) {}
 
   async findAll(paginationQuery: PaginationQueryDto) {
@@ -46,5 +48,31 @@ export class PizzasService {
 
   async delete(id: string) {
     return await this.pizzaModel.findByIdAndDelete(id);
+  }
+
+  async recommend(id: string) {
+    const pizza = await this.findOne(id);
+
+    const session = await this.connection.startSession();
+    session.startTransaction();
+
+    try {
+      pizza.recommendations++;
+
+      const recommendEvent = new this.eventModel({
+        type: 'pizza',
+        name: 'recommend_pizza',
+        payload: { pizzaId: pizza.id },
+      });
+
+      await recommendEvent.save();
+      await pizza.save();
+
+      await session.commitTransaction();
+    } catch (err) {
+      await session.abortTransaction();
+    } finally {
+      session.endSession();
+    }
   }
 }

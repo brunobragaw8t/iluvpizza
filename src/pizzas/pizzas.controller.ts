@@ -41,4 +41,9 @@ export class PizzasController {
   delete(@Param('id') id: string) {
     this.pizzasService.delete(id);
   }
+
+  @Post(':id/recommend')
+  recommend(@Param('id') id: string) {
+    this.pizzasService.recommend(id);
+  }
 }
