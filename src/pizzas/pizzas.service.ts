@@ -1,10 +1,11 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectConnection, InjectModel } from '@nestjs/mongoose/dist';
 import { Connection, Model } from 'mongoose';
 import { PaginationQueryDto } from 'src/common/dto/pagination-query.dto';
 import { CreatePizzaDto } from './dto/create-pizza.dto';
 import { UpdatePizzaDto } from './dto/update-pizza.dto';
 import { Pizza } from './entities/pizza.entity';
+import { PIZZA_BRANDS } from './pizzas.constants';
 
 @Injectable()
 export class PizzasService {
@@ -12,7 +13,10 @@ export class PizzasService {
     @InjectModel(Pizza.name) private readonly pizzaModel: Model<Pizza>,
     @InjectConnection() private readonly connection: Connection,
     @InjectModel(Event.name) private readonly eventModel: Model<Event>,
-  ) {}
+    @Inject(PIZZA_BRANDS) pizzaBrands: string[],
+  ) {
+    console.log(pizzaBrands);
+  }
 
   async findAll(paginationQuery: PaginationQueryDto) {
     const { limit, offset } = paginationQuery;
