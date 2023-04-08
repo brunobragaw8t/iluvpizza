@@ -8,6 +8,7 @@ import {
   Delete,
   Query,
 } from '@nestjs/common';
+import { Public } from 'src/common/decorators/public.decorator';
 import { PaginationQueryDto } from 'src/common/dto/pagination-query.dto';
 import { CreatePizzaDto } from './dto/create-pizza.dto';
 import { UpdatePizzaDto } from './dto/update-pizza.dto';
@@ -17,6 +18,7 @@ import { PizzasService } from './pizzas.service';
 export class PizzasController {
   constructor(private readonly pizzasService: PizzasService) {}
 
+  @Public()
   @Get()
   findAll(@Query() paginationQuery: PaginationQueryDto) {
     return this.pizzasService.findAll(paginationQuery);

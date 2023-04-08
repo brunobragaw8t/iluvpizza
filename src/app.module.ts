@@ -5,6 +5,7 @@ import { AppService } from './app.service';
 import { PizzasModule } from './pizzas/pizzas.module';
 import { PizzaRatingModule } from './pizza-rating/pizza-rating.module';
 import { ConfigModule } from '@nestjs/config';
+import { CommonModule } from './common/common.module';
 import * as Joi from '@hapi/joi';
 
 @Module({
@@ -17,6 +18,7 @@ import * as Joi from '@hapi/joi';
     MongooseModule.forRoot(process.env.MONGO_DB_CONNECTION),
     PizzasModule,
     PizzaRatingModule,
+    CommonModule,
   ],
   controllers: [AppController],
   providers: [AppService],
